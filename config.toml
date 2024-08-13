@@ -1,0 +1,108 @@
+[general]
+opensearch_url = "https://<username>:<password>@127.0.0.1:9200"
+indexes = ["wazuh-alert-*"]
+watch_interval = 15 # seconds
+
+[channels]
+
+[channels.pushover_user1]
+chan_type = "webhook"
+
+[channels.pushover_user1.config]
+url = "https://api.pushover.net/1/messages.json"
+headers = { content-type = "application/json" }
+message = '''
+    {
+      "token": "<app token>",
+      "user": "<user token>",
+      "html": 1,
+      "title": "{{_source.rule.description}} @ {{_source.agent.name}}",
+      "message": "{{_source.data.win.system.message}}{{_source.full_log}}"
+   }
+'''
+
+[channels.pushover_user2]
+chan_type = "webhook"
+
+[channels.pushover_user2.config]
+url = "https://api.pushover.net/1/messages.json"
+headers = { content-type = "application/json" }
+message = '''
+    {
+      "token": "<app token>",
+      "user": "<user token>",
+      "html": 1,
+      "title": "{{_source.rule.description}} @ {{_source.agent.name}}",
+      "message": "{{_source.data.win.system.message}}{{_source.full_log}}"
+   }
+'''
+
+
+[rules]
+
+[rules.above_12]
+name = "Event above level 12 found"
+query = '''
+{ 
+  "query": {
+    "range": { 
+      "rule.level": { 
+        "gte": "12", 
+        "lt": null 
+      } 
+    } 
+  } 
+}
+'''
+channels = {  pushover_user1 = "", pushover_user2 = "" }
+
+[rules.clamav]
+name = "ClamAV found something"
+query = '''
+{
+  "query": {
+    "term": {
+      "rule.id": {
+        "value": "52502"
+      }
+    }
+  }
+}
+'''
+channels = {  pushover_user1 = ""  }
+
+
+[rules.defender]
+name = "Windows Defender found something"
+query = '''
+{
+    "query": {
+        "bool": {
+            "filter": [
+                {
+                    "range": {
+                        "rule.level": {
+                            "from": 12,
+                            "to": null,
+                            "include_lower": true,
+                            "include_upper": true
+                        }
+                    }
+                },
+                {
+                    "term": {
+                        "data.win.system.channel": {
+                            "value": "Microsoft-Windows-Windows Defender/Operational"
+                        }
+                    }
+                }
+            ],
+            "adjust_pure_negative": true,
+            "boost": 1
+        }
+    }
+}
+'''
+channels = {  pushover_user1 = ""  }
+
+
