@@ -103,6 +103,8 @@ impl OpenSearchWatcher {
 
         let hits = json_resp["hits"]["hits"].as_array().unwrap();
 
+        println!("hits: {:?}", serde_json::to_string_pretty(&hits));
+
         for entry in hits {
             let e_s = &entry["_source"];
             let entry_ts = DateTime::parse_from_rfc3339(e_s["@timestamp"].as_str().unwrap())
