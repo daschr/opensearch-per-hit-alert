@@ -1,0 +1,14 @@
+version: '3'
+services:
+  wazuh-per-hit-alert:
+    image: daschr/wazuh-per-hit-alert:latest
+    cpus: 2.0
+    logging:
+      options:
+        max-size: 50m
+    volumes:
+      - etc:/etc/wazuh-per-hit-alert
+    #restart: always
+
+volumes:
+  etc:

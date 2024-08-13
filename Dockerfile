@@ -2,6 +2,7 @@
 
 FROM rust:bookworm as prefetch
 WORKDIR /src/wazuh-per-hit-alert
+RUN apt update && apt install -y libssl-dev && apt clean
 COPY Cargo.toml /src/wazuh-per-hit-alert/
 RUN mkdir /src/wazuh-per-hit-alert/src
 RUN echo 'fn main() {println!("stub!");}' >/src/wazuh-per-hit-alert/src/main.rs
@@ -14,6 +15,7 @@ COPY src /src/wazuh-per-hit-alert/src
 RUN touch src/main.rs && cargo b --release --verbose && cp target/*/wazuh-per-hit-alert .
 
 FROM debian:bookworm as wazuh-per-hit-alert
+RUN apt update && apt install -y libssl3 && apt clean
 RUN mkdir -p /etc/wazuh-per-hit-alert 
 COPY --from=build /src/wazuh-per-hit-alert/wazuh-per-hit-alert /bin/wazuh-per-hit-alert
 COPY config.toml /etc/wazuh-per-hit-alert/
