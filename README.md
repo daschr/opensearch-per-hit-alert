@@ -1,6 +1,6 @@
 <div align="center">
   <h1>wazuh-per-hit-alert</h1>
-  <em>Notification services which queries an OpenSearch instance of Wazuh and alerts users using webhooks for each hit.</em><br><br>
+  <em>Notification service which queries an OpenSearch instance of Wazuh and alerts users using webhooks for each hit.</em><br><br>
   <em>Born out of the frustration that Wazuh is unable to send per-event notifications.</em>
 </div>
 
