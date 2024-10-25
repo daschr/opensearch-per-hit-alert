@@ -101,6 +101,27 @@ impl OpenSearchWatcher {
 
         let json_resp = resp.json::<serde_json::Value>().await.unwrap();
 
+        {
+            let mut hits_found = false;
+            match &json_resp {
+                Value::Object(obj) => {
+                    if let Some(hits) = obj.get("hits") {
+                        if let Some(hits2) = hits.get("hits") {
+                            if hits2.is_array() {
+                                hits_found = true;
+                            }
+                        }
+                    }
+                }
+                _ => (),
+            }
+
+            if !hits_found {
+                println!("Hits array in [\"hits\"][\"hits\"] not found, returning!");
+                return Ok(());
+            }
+        }
+
         let hits = json_resp["hits"]["hits"].as_array().unwrap();
 
         for entry in hits {
